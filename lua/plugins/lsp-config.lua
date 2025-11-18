@@ -2,6 +2,7 @@
 --
 -- This file configures all your Language Servers
 -- and their installer (Mason).
+-- (This is the FINAL, correct "up-to-date" version)
 
 return {
   -- This is the Mason plugin, which installs LSPs and tools
@@ -10,12 +11,8 @@ return {
     config = function()
       require("mason").setup({
         ensure_installed = {
-          -- For none-ls (linters/formatters)
-          "stylua",
-          "prettier",
-          "black",
-          "isort",
-          "eslint_d",
+          -- For none-ls
+          "stylua", "prettier", "black", "isort", "eslint_d",
           -- For Telescope
           "fd",
         }
@@ -29,13 +26,11 @@ return {
   -- This is the main LSP configuration plugin
   {
     "neovim/nvim-lspconfig",
-    -- It depends on the two plugins above
     dependencies = {
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
     },
     
-    -- This is the main config function
     config = function()
       -- 1. Get capabilities (for nvim-cmp)
       local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -48,23 +43,7 @@ return {
         vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
       end
 
-      -- 3. Tell Mason-LSPConfig which servers to install
-      require("mason-lspconfig").setup({
-        ensure_installed = {
-          "lua_ls",
-          "ts_ls",
-          "clangd",
-          "pyright",
-          "dartls",
-          "cssls",
-          "html"
-        },
-      })
-      
-      -- 4. Get the lspconfig plugin
-      local lspconfig = require("lspconfig")
-
-      -- 5. Define the list of servers to set up
+      -- 3. Define the list of servers to install
       local servers = {
         "lua_ls",
         "ts_ls",
@@ -75,13 +54,24 @@ return {
         "html"
       }
 
-      -- 6. Loop over the servers and set them up
-      for _, server_name in ipairs(servers) do
-        lspconfig[server_name].setup({
-          on_attach = on_attach,
-          capabilities = capabilities,
-        })
-      end
+      -- 4. THIS IS THE NEW, CORRECT SETUP BLOCK --
+      -- This is one single call to mason-lspconfig
+      require("mason-lspconfig").setup({
+        -- This list tells Mason which LSPs to install
+        ensure_installed = servers,
+        
+        -- This 'handlers' table replaces the old 'for' loop
+        handlers = {
+          -- This is the "default setup" function.
+          -- It will be called for every server in the 'ensure_installed' list.
+          function(server_name)
+            require("lspconfig")[server_name].setup({
+              on_attach = on_attach,
+              capabilities = capabilities,
+            })
+          end,
+        }
+      })
     end,
   },
 }
