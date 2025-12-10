@@ -14,14 +14,25 @@ return {
     config = function()
       local cmp = require("cmp")
 
-      require("luasnip.loaders.from_vscode").lazy_load()
+      -- Try to lazily load VSCode-style snippets for LuaSnip if available
+      pcall(function()
+        require("luasnip.loaders.from_vscode").lazy_load()
+      end)
 
       cmp.setup({
         snippet = {
           -- REQUIRED - you must specify a snippet engine
           expand = function(args)
-            vim.fn["vsnip#anonymous"](args.body)
-            require("luasnip").lsp_expand(args.body)
+            -- Prefer LuaSnip if present, otherwise fall back to vsnip if available
+            local ok_ls, luasnip = pcall(require, "luasnip")
+            if ok_ls and luasnip and luasnip.lsp_expand then
+              luasnip.lsp_expand(args.body)
+              return
+            end
+
+            if vim.fn.exists('*vsnip#anonymous') == 1 then
+              vim.fn["vsnip#anonymous"](args.body)
+            end
           end,
         },
         window = {

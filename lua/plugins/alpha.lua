@@ -29,13 +29,13 @@ return {
 
     -- The menu buttons
     dashboard.section.buttons.val = {
-      dashboard.button("f", "  Find file", ":Telescope find_files <CR>"),
-      dashboard.button("n", "  New file", ":enew <CR>"),
-      dashboard.button("r", "  Recent files", ":Telescope oldfiles <CR>"),
-      dashboard.button("t", "  Find text", ":Telescope live_grep <CR>"),
-      dashboard.button("c", "  Config", ":e $MYVIMRC <CR>"),
+      dashboard.button("f", "🔎 Find file", ":Telescope find_files <CR>"),
+      dashboard.button("n", "📄  New file", ":enew <CR>"),
+      dashboard.button("r", "🕘  Recent files", ":Telescope oldfiles <CR>"),
+      dashboard.button("t", ">_  Find text", ":Telescope live_grep <CR>"),
+      dashboard.button("c", "⚙️  Config", ":e $MYVIMRC <CR>"),
       dashboard.button("l", "💤  Lazy", ":Lazy <CR>"),
-      dashboard.button("q", "  Quit", ":qa <CR>"),
+      dashboard.button("q", "🚪  Quit", ":qa <CR>"),
     }
 
     -- The footer
